@@ -39,7 +39,7 @@ var context = config.dev.context
 switch(process.env.NODE_ENV){
     case 'local': var proxypath = 'http://localhost:8001'; break;
     case 'online': var proxypath = 'http://cangdu.org:8001'; break;
-    default:  var proxypath = config.dev.proxypath; break;
+    default:  var proxypath = config.dev.proxypath; 
 }
 var options = {
     target: proxypath,
@@ -48,17 +48,6 @@ var options = {
 if (context.length) {
     server.use(proxyMiddleware(context, options))
 }
-
-server.use(proxyMiddleware('/payapi', {
-    target: 'https://pay.ele.me',
-    changeOrigin: true,
-}))
-server.use(proxyMiddleware('/m.ele.me@json', {
-    target: 'https://crayfish.elemecdn.com',
-    changeOrigin: true,
-}))
-
-
 
 // handle fallback for HTML5 history API
 server.use(require('connect-history-api-fallback')())

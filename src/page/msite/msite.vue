@@ -12,7 +12,7 @@
 			</router-link>
     	</head-top>
     	<nav class="msite_nav">
-    		<div class="swiper-container">
+    		<div class="swiper-container" v-if="foodTypes.length">
 		        <div class="swiper-wrapper">
 		            <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
 	            		<router-link :to="{path: '/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId(foodItem.link)}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
@@ -25,6 +25,7 @@
 		        </div>
 		        <div class="swiper-pagination"></div>
 		    </div>
+		    <img src="../../images/fl.svg" class="fl_back animation_opactiy" v-else>
     	</nav>
     	<div class="shop_list_container">
 	    	<header class="shop_header">
@@ -45,7 +46,7 @@ import {mapMutations} from 'vuex'
 import headTop from 'src/components/header/head'
 import footGuide from 'src/components/footer/footGuide'
 import shopList from 'src/components/common/shoplist'
-import {msiteAdress, msiteFoodTypes} from 'src/service/getData'
+import {msiteAdress, msiteFoodTypes, cityGuess} from 'src/service/getData'
 import 'src/plugins/swiper.min.js'
 import 'src/style/swiper.min.css'
 
@@ -60,7 +61,12 @@ export default {
         }
     },
     async beforeMount(){
-		this.geohash = this.$route.query.geohash || 'wtw3sm0q087';
+		if (!this.$route.query.geohash) {
+			const address = await cityGuess();
+			this.geohash = address.latitude + ',' + address.longitude;
+		}else{
+			this.geohash = this.$route.query.geohash
+		}
 		//保存geohash 到vuex
 		this.SAVE_GEOHASH(this.geohash);
     	//获取位置信息
@@ -141,12 +147,16 @@ export default {
 		padding-top: 2.1rem;
 		background-color: #fff;
 		border-bottom: 0.025rem solid $bc;
+		height: 10.6rem;
 		.swiper-container{
 			@include wh(100%, auto);
 			padding-bottom: 0.6rem;
 			.swiper-pagination{
 				bottom: 0.2rem;
 			}
+		}
+		.fl_back{
+			@include wh(100%, 100%);
 		}
 	}
 	.food_types_container{

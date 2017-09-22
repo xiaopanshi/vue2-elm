@@ -22,7 +22,7 @@ vue2 + vuex + vue-router + webpack + ES6/7 + fetch + sass + flex + svg
 
 ## 项目运行
 
-#### 注意：由于涉及大量的 ES6/7 等新属性，nodejs 必须是 6.0 以上版本 ，node 7 是先行版，有可能会出问题，建议使用 node 6 稳定版
+#### 注意：由于涉及大量的 ES6/7 等新属性，node 需要 6.0 以上版本 
 
 ```
 git clone https://github.com/bailicangdu/vue2-elm.git  
@@ -34,6 +34,12 @@ npm install
 npm run dev
 
 ```
+## 另外
+此项目有配套的后台系统，如果想前后台同时开发，可以下载对应的后台系统：[后台项目传送地址](https://github.com/bailicangdu/node-elm)。
+
+此时启动项目使用：npm run local 而不是 npm run dev。
+
+如果只做前端开发，请忽略这句话。
 
 
 # 说明
@@ -44,32 +50,32 @@ npm run dev
 
 >  开发环境 macOS 10.12.3  Chrome 56  nodejs 6.10.0
 
->  特别感谢辰妹子，在百忙之中抽出时间和我一起完成了这个项目，辛苦了🌹
+>  特别感谢辰妹子[@bailichen](https://github.com/bailichen)，在百忙之中抽出时间和我一起完成了这个项目，辛苦了🌹
 
 >  如有问题请直接在 Issues 中提，或者您发现问题并有非常好的解决方案，欢迎 PR 👍
+
+>  项目交流群：528447162(QQ)
 
 >  推荐一个 react + redux 开源项目，对react感兴趣的朋友赶紧去看看。[地址在这里](https://github.com/bailicangdu/react-pxq)
 
 >  另外一个 vue2 + vuex 的入门项目，比当前的项目简单很多，非常适合入门练习。[地址在这里](https://github.com/bailicangdu/vue2-happyfri)
 
 
+## 关于 数据接口 的说明🤔
 
-# 关于 数据 的说明🤔
+### 2017-05-30
 
-下载代码运行后，因为开启了反向代理，可以获取真实的官方数据，最终可以进行下单(真实的下单，而不是模拟，下单后可以在官方App中查看并付款，亲自试过，且成功付款点餐)，但是为了安全起见，登录的帐号为固定的帐号，以免泄露个人信息，不过照样可以点餐。
+由于一些原因，以前的数据接口无法使用，导致项目无法正常运行。以后改用nodejs构建的[后台系统](https://github.com/bailicangdu/node-elm)接口，数据接口的格式保持了和官网的一致。并提供对应的[后台管理系统](https://github.com/bailicangdu/vue2-manage)
 
 
-## 效果演示
 
-#### (demo使用的是模拟数据，数据是固定的，只做为样式的演示，要获取真实的数据，请clone代码并运行);
+# 效果演示
 
-[查看demo请戳这里](http://test.fe.ptdev.cn/elm/)（请用chrome手机模式预览）
+[查看demo请戳这里](http://cangdu.org:8001/)（请用chrome手机模式预览）
 
 ### 移动端扫描下方二维码
 
-![](https://github.com/bailicangdu/vue2-elm/blob/master/screenshots/elm_ewm.png)
-
-
+<img src="https://github.com/bailicangdu/vue2-elm/blob/master/screenshots/ewm.png" width="250" height="250"/>
 
 
 
@@ -123,7 +129,7 @@ npm run dev
 
 2、利用 react-native 写出跨 Android 和 IOS 的原生APP版本。[地址在这里](https://github.com/bailicangdu/React-Native-elm)
 
-3、如果时间来的及，会出一个pc端的网页版。
+3、如果时间来的及，会出一卖家版本。
 
 所以我的目的是构建一个横跨前后端，移动IOS、Android的完整生态圈。
 
@@ -308,6 +314,6 @@ npm run dev
 ```
 
 
-### License
+# License
 
-[MIT](https://github.com/bailicangdu/vue2-elm/blob/master/LICENSE)
+[GPL](https://github.com/bailicangdu/vue2-elm/blob/master/COPYING)

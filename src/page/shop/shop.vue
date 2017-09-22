@@ -7,11 +7,11 @@
                 </svg>
             </nav>
             <header class="shop_detail_header" ref="shopheader" :style="{zIndex: showActivities? '14':'10'}">
-                <img :src="localapi || proapi ? imgBaseUrl + shopDetailData.image_path: getImgPath(shopDetailData.image_path)" class="header_cover_img">
+                <img :src="imgBaseUrl + shopDetailData.image_path" class="header_cover_img">
                 <section class="description_header">
                     <router-link to="/shop/shopDetail" class="description_top">
                         <section class="description_left">
-                            <img :src="localapi || proapi ? imgBaseUrl + shopDetailData.image_path: getImgPath(shopDetailData.image_path)">
+                            <img :src="imgBaseUrl + shopDetailData.image_path">
                         </section>
                         <section class="description_right">
                             <h4 class="description_title ellipsis">{{shopDetailData.name}}</h4>
@@ -98,7 +98,7 @@
                                     <section v-for="(foods,foodindex) in item.foods" :key="foodindex" class="menu_detail_list">
                                         <router-link  :to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
                                             <section class="menu_food_img">
-                                                <img :src="localapi || proapi ? imgBaseUrl + foods.image_path: getImgPath(foods.image_path)">
+                                                <img :src="imgBaseUrl + foods.image_path">
                                             </section>
                                             <section class="menu_food_description">
                                                 <h3 class="food_description_head">
@@ -306,6 +306,9 @@
             </span>
         </transition>
        <loading v-show="showLoading || loadRatings"></loading>
+       <section class="animation_opactiy shop_back_svg_container" v-if="showLoading">
+           <img src="../../images/shop_back_svg.svg">
+       </section>
        <transition name="router-slid" mode="out-in">
             <router-view></router-view>
         </transition>
@@ -319,7 +322,7 @@
     import buyCart from 'src/components/common/buyCart'
     import ratingStar from 'src/components/common/ratingStar'
     import {loadMore, getImgPath} from 'src/components/common/mixin'
-    import { localapi, proapi, imgBaseUrl} from 'src/config/env'
+    import {imgBaseUrl} from 'src/config/env'
     import BScroll from 'better-scroll'
 
     export default {
@@ -359,9 +362,6 @@
                 elLeft: 0, //当前点击加按钮在网页中的绝对top值
                 elBottom: 0, //当前点击加按钮在网页中的绝对left值
                 ratingScroll: null, //评论页Scroll
-                wrapperMenu: null,
-                localapi, 
-                proapi, 
                 imgBaseUrl,
             }
         },
@@ -373,6 +373,9 @@
         mounted(){
             this.initData();
             this.windowHeight = window.innerHeight;
+        },
+        beforeDestroy(){
+            // this.foodScroll.removeEventListener('scroll', )
         },
         mixins: [loadMore, getImgPath],
         components: {
@@ -444,19 +447,15 @@
             },
             //获取食品列表的高度，存入shopListTop
             getFoodListHeight(){
-                const baseHeight = this.$refs.shopheader.clientHeight;
-                const chooseTypeHeight = this.$refs.chooseType.clientHeight;
                 const listContainer = this.$refs.menuFoodList;
                 const listArr = Array.from(listContainer.children[0].children);
                 listArr.forEach((item, index) => {
-                    this.shopListTop[index] = item.offsetTop - baseHeight - chooseTypeHeight;
+                    this.shopListTop[index] = item.offsetTop;
                 });
                 this.listenScroll(listContainer)
             },
             //当滑动食品列表时，监听其scrollTop值来设置对应的食品列表标题的样式
             listenScroll(element){
-                let oldScrollTop;
-                let requestFram;
                 this.foodScroll = new BScroll(element, {
                     probeType: 3,
                     deceleration: 0.001,
@@ -465,20 +464,23 @@
                     click: true,
                 });
 
-                this.wrapperMenu = new BScroll('#wrapper_menu', {
+                const wrapperMenu = new BScroll('#wrapper_menu', {
                     click: true,
                 });
 
+                const wrapMenuHeight = this.$refs.wrapperMenu.clientHeight;
                 this.foodScroll.on('scroll', (pos) => {
-                        this.shopListTop.forEach((item, index) => {
+                    if (!this.$refs.wrapperMenu) {
+                        return 
+                    }
+                    this.shopListTop.forEach((item, index) => {
                         if (this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item) {
                             this.menuIndex = index;
+                            const menuList=this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
+                            const el = menuList[0];
+                            wrapperMenu.scrollToElement(el, 800, 0, -(wrapMenuHeight/2 - 50));
                         }
                     })
-                    let wrapMenuHeight = this.$refs.wrapperMenu.clientHeight;
-                    let menuList=this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
-                    let el = menuList[0];
-                    this.wrapperMenu.scrollToElement(el, 800);
                 })
             },
             //控制活动详情页的显示隐藏
@@ -598,15 +600,7 @@
             },
             //隐藏动画
             hideLoading(){
-                if (process.env.NODE_ENV !== 'development') {
-                    clearTimeout(this.timer);
-                    this.timer = setTimeout(() => {
-                        clearTimeout(this.timer);
-                        this.showLoading = false;
-                    }, 600)
-                }else{
-                    this.showLoading = false;
-                }
+                this.showLoading = false;
             },
             //显示规格列表
             showChooseList(foods){
@@ -736,6 +730,13 @@
        75%  { transform: scale(.9) }
        100% { transform: scale(1) }
     }
+    .shop_back_svg_container{
+        position: fixed;
+        @include wh(100%, 100%);
+        img{
+            @include wh(100%, 100%);
+        }
+    }
     .shop_container{
         display: flex;
         flex-direction: column;
@@ -750,7 +751,7 @@
         left: 0;
         width: 100%;
         height: 2rem;
-        z-index: 17;
+        z-index: 11;
         padding-top: 0.2rem;
         padding-left: 0.2rem;
     }
@@ -905,7 +906,6 @@
         overflow-y: hidden;
         position: relative;
         .menu_left{
-            background-color: #f8f8f8;
             width: 3.8rem;
             .menu_left_li{
                 padding: .7rem .3rem;
@@ -1477,6 +1477,7 @@
                     border: 0.025rem solid #ddd;
                     border-radius: .2rem;
                     margin-right: .5rem;
+                    margin-bottom: .2rem;
                 }
                 .specs_activity{
                     border-color: #3199e8;
